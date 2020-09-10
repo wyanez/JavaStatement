@@ -58,7 +58,7 @@ public class JavaStatementGui extends Frame implements ActionListener {
         cancelBtn = new Button("Cancel");
         cancelBtn.addActionListener(this);
 
-        clearBtn = new Button("Limpiar Consola");
+        clearBtn = new Button("Clear Output");
         clearBtn.addActionListener(this);
 
         sopBtn = new Button("System.out.println()");
