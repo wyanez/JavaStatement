@@ -19,8 +19,11 @@ import java.io.IOException;
  */
 public class JavaStatementGui extends Frame implements ActionListener {
     
-    private TextArea text;
-    private OutputArea output;
+    private static final Font FONT_CODE = new Font("Monospaced", Font.PLAIN, 12);
+    private static final  int TEXT_COLS = 80;
+    private TextArea textCode;
+    private TextArea textImport;
+    private OutputArea textOutput;
     private Button runBtn;
     private Button cancelBtn;
     private Button sopBtn;
@@ -39,16 +42,22 @@ public class JavaStatementGui extends Frame implements ActionListener {
     private void setupGui() {
         // Create the components
         Panel panel = new Panel();
-        panel.setLayout(new GridLayout(2, 1, 5, 5));
-        text = new TextArea(10, 45);
-        text.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        //panel.setLayout(new GridLayout(3, 1, 5, 5));
+        panel.setLayout(new BorderLayout());
+        textCode = new TextArea(10, TEXT_COLS);
+        textCode.setFont(FONT_CODE);
+        
+        textImport = new TextArea(5, TEXT_COLS);
+        textImport.setFont(FONT_CODE);
+        textImport.setText("import java.io.*;");
 
-        output = new OutputArea();
-        output.setRows(10);
-        output.setColumns(45);
+        textOutput = new OutputArea();
+        textOutput.setRows(10);
+        textOutput.setColumns(TEXT_COLS);
 
-        panel.add(text);
-        panel.add(output);
+        panel.add(textImport,BorderLayout.NORTH);
+        panel.add(textCode,BorderLayout.CENTER);
+        panel.add(textOutput,BorderLayout.SOUTH);
 
         this.add(panel, BorderLayout.CENTER);
 
@@ -64,18 +73,17 @@ public class JavaStatementGui extends Frame implements ActionListener {
         sopBtn = new Button("System.out.println()");
         sopBtn.addActionListener(this);
 
-        Panel p = new Panel();
-        p.add(runBtn);
-        p.add(cancelBtn);
-        p.add(clearBtn);
-        p.add(sopBtn);
-        this.add(p, BorderLayout.SOUTH);
+        Panel panelBtn = new Panel();
+        panelBtn.add(runBtn);
+        panelBtn.add(cancelBtn);
+        panelBtn.add(clearBtn);
+        panelBtn.add(sopBtn);
+        this.add(panelBtn, BorderLayout.SOUTH);
 
-        this.setBackground(SystemColor.control);
+        this.setBackground(SystemColor.control);        
+        textCode.requestFocus();
     }
-
     
-
     /**
      * Listens to actions from the run button.
      * @param e
@@ -85,12 +93,13 @@ public class JavaStatementGui extends Frame implements ActionListener {
         Object source = e.getSource();
 
         if (runBtn == source) {
-            String sourceCode = text.getText().trim();
+            String sourceCode = textCode.getText().trim();
+            String importCode = textImport.getText().trim();
             if(!sourceCode.isEmpty()){
                 // Disable the run button while we're running
                 runBtn.setEnabled(false);
                 try {
-                    javaStmt.doRun(sourceCode);
+                    javaStmt.doRun(sourceCode,importCode);
                 } catch (IOException ex) {
                     System.err.println(ex.toString());
                 }
@@ -99,20 +108,21 @@ public class JavaStatementGui extends Frame implements ActionListener {
         }
 
         if (cancelBtn == source) {
-            text.setText("");
-            output.setText("");
-            text.requestFocus();
+            textCode.setText("import java.io.*;");
+            textCode.setText("");
+            textOutput.setText("");
+            textCode.requestFocus();
         }
 
         if (clearBtn == source) {
-            output.setText("");
-            text.requestFocus();
+            textOutput.setText("");
+            textCode.requestFocus();
         }
 
         if (sopBtn == source) {
-            text.insert("System.out.println();", text.getCaretPosition());
-            text.setCaretPosition(text.getCaretPosition() - 2);
-            text.requestFocus();
+            textCode.insert("System.out.println();", textCode.getCaretPosition());
+            textCode.setCaretPosition(textCode.getCaretPosition() - 2);
+            textCode.requestFocus();
         }
     }
 }

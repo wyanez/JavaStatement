@@ -20,12 +20,13 @@ public class JavaStatement {
      * Compiles and runs the short code segment.
      *
      * @param sourceCode source code for compile
+     * @param importCode imports code 
      * @return a boolean that indicates if was sucessfully or not
      * @throws IOException if there was an error creating the source file.
      */
-    public boolean doRun(String sourceCode) throws IOException {
+    public boolean doRun(String sourceCode, String importCode) throws IOException {
         // Create a temp. file
-        File sourceFile = createSourceFile(sourceCode);
+        File sourceFile = createSourceFile(sourceCode,importCode);
         String filename = sourceFile.getName();
         String classname = filename.substring(0, filename.length() - 5);
         // Compile
@@ -77,9 +78,8 @@ public class JavaStatement {
         return result;
     }
     
-    private File createSourceFile(String sourceCode) throws IOException{
-        File file = File.createTempFile("jav", ".java",
-         new File(System.getProperty("user.dir")));
+    private File createSourceFile(String sourceCode, String importCode) throws IOException{
+        File file = File.createTempFile("jav", ".java",new File(System.getProperty("user.dir")));
 
         // Set the file to be deleted on exit
         file.deleteOnExit();
@@ -94,6 +94,8 @@ public class JavaStatement {
             out.println("/**");
             out.println(" * Source created on " + new Date());
             out.println(" */");
+            out.println(importCode);
+            out.print("        ");
             out.println("public class " + classname + " {");
             out.println("    public static void main(String[] args) throws Exception {");
             
