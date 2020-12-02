@@ -4,13 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Button;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.GridLayout;
 import java.awt.Panel;
 import java.awt.SystemColor;
 import java.awt.TextArea;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * Program that lets you run a short segment of Java code.
@@ -28,6 +33,7 @@ public class JavaStatementGui extends Frame implements ActionListener {
     private Button cancelBtn;
     private Button sopBtn;
     private Button clearBtn;
+    private Button copyClipBtn;
     
     private final JavaStatement javaStmt;
     /**
@@ -41,8 +47,7 @@ public class JavaStatementGui extends Frame implements ActionListener {
 
     private void setupGui() {
         // Create the components
-        Panel panel = new Panel();
-        //panel.setLayout(new GridLayout(3, 1, 5, 5));
+        Panel panel = new Panel();        
         panel.setLayout(new BorderLayout());
         textCode = new TextArea(10, TEXT_COLS);
         textCode.setFont(FONT_CODE);
@@ -72,12 +77,16 @@ public class JavaStatementGui extends Frame implements ActionListener {
 
         sopBtn = new Button("System.out.println()");
         sopBtn.addActionListener(this);
+        
+        copyClipBtn = new Button("Copy Clipboard");
+        copyClipBtn.addActionListener(this);
 
         Panel panelBtn = new Panel();
         panelBtn.add(runBtn);
         panelBtn.add(cancelBtn);
         panelBtn.add(clearBtn);
         panelBtn.add(sopBtn);
+        panelBtn.add(copyClipBtn);
         this.add(panelBtn, BorderLayout.SOUTH);
 
         this.setBackground(SystemColor.control);        
@@ -124,5 +133,32 @@ public class JavaStatementGui extends Frame implements ActionListener {
             textCode.setCaretPosition(textCode.getCaretPosition() - 2);
             textCode.requestFocus();
         }
+        
+        if(copyClipBtn == source){
+            String sourceCode = textCode.getText().trim();
+            String importCode = textImport.getText().trim();
+            if(!sourceCode.isEmpty()) copyCodeToClipboard(sourceCode, importCode);
+            
+        }
     }
+    
+    /**
+     * Copy snippets code to Clipboard
+     * @param sourceCode
+     * @param importCode 
+     */
+    public void copyCodeToClipboard(String sourceCode, String importCode){
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        
+        String importCodeCommented = Arrays.stream(importCode.split(System.lineSeparator()))
+                                    .map( (line) -> "//" + line)
+                                    .collect(Collectors.joining(System.lineSeparator()));
+        
+        String code =  importCodeCommented + System.lineSeparator() + sourceCode;
+        Transferable contents = new StringSelection(code);
+        clipboard.setContents(contents, null);
+        System.out.println("Código copiado al clipboard Ok!");
+    }
+    
+
 }
