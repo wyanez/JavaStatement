@@ -78,6 +78,13 @@ public class JavaStatement {
         return result;
     }
     
+    /**
+     * 
+     * @param sourceCode
+     * @param importCode
+     * @return a File .java with the source code
+     * @throws IOException 
+     */
     private File createSourceFile(String sourceCode, String importCode) throws IOException{
         File file = File.createTempFile("jav", ".java",new File(System.getProperty("user.dir")));
 
@@ -108,7 +115,7 @@ public class JavaStatement {
             
             // Flush and close the stream
             out.flush();
-        }
+        }        
         return file;
     }
     
